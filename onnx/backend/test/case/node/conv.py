@@ -116,3 +116,26 @@ class Conv(Base):
                                                 [171., 183.]]]]).astype(np.float32)
         expect(node_with_asymmetric_padding, inputs=[x, W], outputs=[y_with_asymmetric_padding],
                name='test_conv_with_strides_and_asymmetric_padding')
+
+    def export_conv_with_dilation():  # type: () -> None
+
+        x = np.array([x for x in range(25)], dtype=np.float).reshape([1,1,5,5])  # (1, 1, 5, 5) input tensor
+
+        W = np.eye(3)  # (1, 1, 3, 3) tensor for convolution weights
+
+        # Convolution with padding
+        node_with_dilations = onnx.helper.make_node(
+            'Conv',
+            inputs=['x', 'W'],
+            outputs=['y'],
+            kernel_shape=[3, 3],
+            dilations = [1,2],
+            strides=[2,2],
+            # Default values for other attributes: groups=1
+            pads=[1, 1, 1, 1],
+        )
+        y_with_dilations = np.array([[[[11.,  4.],
+                                       [31., 21.],
+                                       [22., 41.]]]]).astype(np.float32)
+        expect(node_with_padding, inputs=[x, W], outputs=[y_with_dilations],
+               name='test_basic_conv_with_dilations')
